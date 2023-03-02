@@ -13,8 +13,6 @@ from uuid import uuid4
 from squarelet_auth.fields import AutoCreatedField, AutoLastModifiedField
 from squarelet_auth.organizations import get_organization_model
 
-Organization = get_organization_model()
-
 
 class User(AbstractBaseUser, PermissionsMixin):
 
@@ -142,6 +140,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         There should always be exactly one individual organization,
         which has a matching UUID
         """
+        Organization = get_organization_model()
+
         return Organization.objects.get(uuid=self.uuid)
 
     @property
