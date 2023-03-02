@@ -69,7 +69,7 @@ class OrganizationAdmin(admin.ModelAdmin):
         user = User.objects.get(uuid=obj.uuid)
         link = reverse(
             "admin:{}_change".format(
-                settings.AUTH_USER_MODEL.lower().replace(".", "_")
+                settings.USER_MODEL.lower().replace(".", "_")
             ),
             args=(user.pk,),
         )

@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('active', models.BooleanField(default=False, help_text='The user is currently working on behalf of this organization', verbose_name='active')),
                 ('admin', models.BooleanField(default=False, help_text='The user is an administrator for this organization', verbose_name='admin')),
                 ('organization', models.ForeignKey(help_text='An organization being linked to a user', on_delete=django.db.models.deletion.CASCADE, related_name='memberships', to=settings.SQUARELET_ORGANIZATION_MODEL, verbose_name='organization')),
-                ('user', models.ForeignKey(help_text='A user being linked to an organization', on_delete=django.db.models.deletion.CASCADE, related_name='memberships', to=settings.AUTH_USER_MODEL, verbose_name='user')),
+                ('user', models.ForeignKey(help_text='A user being linked to an organization', on_delete=django.db.models.deletion.CASCADE, related_name='memberships', to=settings.USER_MODEL, verbose_name='user')),
             ],
         ),
         migrations.CreateModel(
@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='organization',
             name='users',
-            field=models.ManyToManyField(help_text='The users who are members of this organization', related_name='organizations', through='squarelet_auth_organizations.Membership', to=settings.AUTH_USER_MODEL, verbose_name='users'),
+            field=models.ManyToManyField(help_text='The users who are members of this organization', related_name='organizations', through='squarelet_auth_organizations.Membership', to=settings.USER_MODEL, verbose_name='users'),
         ),
         migrations.AlterUniqueTogether(
             name='membership',

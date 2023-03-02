@@ -29,9 +29,9 @@ for setting in required_settings:
             f"You must define {setting} in settings to use SquareletAuth"
         )
 
+BASE_URL = settings.BASE_URL
 SOCIAL_AUTH_SQUARELET_KEY = settings.SOCIAL_AUTH_SQUARELET_KEY
 SOCIAL_AUTH_SQUARELET_SECRET = settings.SOCIAL_AUTH_SQUARELET_SECRET
-ORGANIZATION_MODEL = settings.SQUARELET_ORGANIZATION_MODEL
-BASE_URL = getattr(settings, "BASE_URL")
 
-AUTH_USER_MODEL = getattr(settings, "SQUARELET_USER_MODEL", settings.AUTH_USER_MODEL)
+ORGANIZATION_MODEL = settings.SQUARELET_ORGANIZATION_MODEL
+USER_MODEL = getattr(settings, "SQUARELET_USER_MODEL", settings.AUTH_USER_MODEL)

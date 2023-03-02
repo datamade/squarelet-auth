@@ -18,7 +18,7 @@ class Membership(models.Model):
 
     user = models.ForeignKey(
         verbose_name=_("user"),
-        to=settings.AUTH_USER_MODEL,
+        to=settings.USER_MODEL,
         on_delete=models.CASCADE,
         related_name="memberships",
         help_text=_("A user being linked to an organization"),
@@ -83,7 +83,7 @@ class AbstractOrganization(models.Model):
 
     users = models.ManyToManyField(
         verbose_name=_("users"),
-        to=settings.AUTH_USER_MODEL,
+        to=settings.USER_MODEL,
         through=Membership,
         related_name="organizations",
         help_text=_("The users who are members of this organization"),
