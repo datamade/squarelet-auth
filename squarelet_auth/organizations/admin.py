@@ -1,12 +1,12 @@
 # Django
 from django.contrib import admin
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 # SquareletAuth
 from squarelet_auth import settings
 from squarelet_auth.organizations.models import Entitlement, Organization
+from squarelet_auth.users import get_user_model
 
 User = get_user_model()
 
