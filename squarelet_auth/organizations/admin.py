@@ -1,14 +1,14 @@
 # Django
 from django.contrib import admin
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 # SquareletAuth
 from squarelet_auth import settings
 from squarelet_auth.organizations.models import Entitlement, Organization
+from squarelet_auth.utils import get_squarelet_user_model
 
-User = get_user_model()
+User = get_squarelet_user_model()
 
 
 @admin.register(Organization)
@@ -68,9 +68,7 @@ class OrganizationAdmin(admin.ModelAdmin):
         """Link to the individual org's user"""
         user = User.objects.get(uuid=obj.uuid)
         link = reverse(
-            "admin:{}_change".format(
-                settings.USER_MODEL.lower().replace(".", "_")
-            ),
+            "admin:{}_change".format(settings.USER_MODEL.lower().replace(".", "_")),
             args=(user.pk,),
         )
         return '<a href="%s">%s</a>' % (link, user.username)

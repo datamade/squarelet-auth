@@ -2,7 +2,6 @@
 
 # Django
 from celery.task import task
-from django.contrib.auth import get_user_model
 
 # Standard Library
 import logging
@@ -19,7 +18,7 @@ from squarelet_auth.organizations.utils import (
 from squarelet_auth.users.utils import (
     squarelet_update_or_create as user_update_or_create,
 )
-from squarelet_auth.utils import squarelet_get
+from squarelet_auth.utils import squarelet_get, get_squarelet_user_model
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +26,7 @@ logger = logging.getLogger(__name__)
 Organization = get_organization_model()
 
 
-User = get_user_model()
+User = get_squarelet_user_model()
 
 
 @task(autoretry_for=(requests.exceptions.RequestException,), retry_backoff=1)

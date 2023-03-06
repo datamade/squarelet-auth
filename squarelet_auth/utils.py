@@ -1,5 +1,7 @@
 # Django
 from django.core.cache import cache
+from django.apps import apps as django_apps
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 
 # Standard Library
 import logging
@@ -62,3 +64,21 @@ def squarelet_get(path, params=None):
     if params is None:
         params = {}
     return _squarelet(requests.get, path, params=params)
+
+
+def get_squarelet_user_model():
+    """
+    Return the Squarelet user model that is active in this project.
+    """
+
+    try:
+        return django_apps.get_model(settings.SQUARELET_USER_MODEL, require_ready=False)
+    except ValueError:
+        raise ImproperlyConfigured(
+            "SQUARELET_USER_MODEL must be of the form 'app_label.model_name'"
+        )
+    except LookupError:
+        raise ImproperlyConfigured(
+            "SQUARELET_USER_MODEL refers to model '%s' that has not been installed"
+            % settings.SQUARELET_USER_MODEL
+        )

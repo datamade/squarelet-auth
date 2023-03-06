@@ -1,16 +1,15 @@
 """
 Custom pipeline steps for oAuth authentication
 """
-# Django
-from django.contrib.auth import get_user_model
 
 # Standard Library
 import logging
 
 # SquareletAuth
 from squarelet_auth.users.utils import squarelet_update_or_create
+from squarelet_auth.utils import get_squarelet_user_model
 
-User = get_user_model()
+User = get_squarelet_user_model()
 
 logger = logging.getLogger(__name__)
 
