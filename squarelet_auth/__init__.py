@@ -7,9 +7,6 @@ from squarelet_auth import settings
 
 
 def model_from_setting(setting_key):
-    """
-    Return the Organization model that is active in this project.
-    """
     setting_value = getattr(settings, setting_key)
     try:
         return django_apps.get_model(setting_value, require_ready=False)
