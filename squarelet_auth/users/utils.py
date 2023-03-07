@@ -70,7 +70,10 @@ def _squarelet_update_or_create(uuid, data):
 
 def _update_organizations(user, data):
     """Update the user's organizations"""
-    current_organizations = set(user.organizations.all())
+    try:
+        current_organizations = set(user.organizations.all())
+    except AttributeError:
+        current_organizations = set()
     new_memberships = []
     active = True
 
