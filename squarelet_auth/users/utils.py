@@ -47,6 +47,7 @@ def squarelet_update_or_create(uuid, data):
 def _squarelet_update_or_create(uuid, data):
     """Format user data and update or create the user"""
     user_map = {
+        "uuid": "uuid"
         "preferred_username": "username",
         "email": "email",
         "name": "name",
@@ -65,15 +66,12 @@ def _squarelet_update_or_create(uuid, data):
         "use_autologin": True,
     }
     user_data = {user_map[k]: data.get(k, user_defaults[k]) for k in user_map}
-    return User.objects.update_or_create(uuid=uuid, defaults=user_data)
+    return User.objects.update_or_create(defaults={**user_data, "uuid": uuid})
 
 
 def _update_organizations(user, data):
     """Update the user's organizations"""
-    try:
-        current_organizations = set(user.organizations.all())
-    except AttributeError:
-        current_organizations = set()
+    current_organizations = set(user.organizations.all())
     new_memberships = []
     active = True
 
