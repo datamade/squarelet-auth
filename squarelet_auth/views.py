@@ -61,7 +61,7 @@ def logout(request):
             settings.SQUARELET_URL, urlencode(params)
         )
     else:
-        redirect_url = "index"
+        redirect_url = settings.LOGOUT_REDIRECT_URL
     auth.logout(request)
     messages.success(request, "You have successfully logged out.")
     return redirect(redirect_url)
