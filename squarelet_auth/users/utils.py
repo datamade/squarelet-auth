@@ -47,7 +47,7 @@ def squarelet_update_or_create(uuid, data):
 def _squarelet_update_or_create(uuid, data):
     """Format user data and update or create the user"""
     user_map = {
-        "uuid": "uuid"
+        "uuid": "uuid",
         "preferred_username": "username",
         "email": "email",
         "name": "name",
@@ -57,6 +57,7 @@ def _squarelet_update_or_create(uuid, data):
         "use_autologin": "use_autologin",
     }
     user_defaults = {
+        "uuid": uuid,
         "preferred_username": "",
         "email": "",
         "name": "",
