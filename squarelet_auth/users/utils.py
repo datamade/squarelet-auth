@@ -67,7 +67,7 @@ def _squarelet_update_or_create(uuid, data):
         "use_autologin": True,
     }
     user_data = {user_map[k]: data.get(k, user_defaults[k]) for k in user_map}
-    return User.objects.update_or_create(defaults={**user_data, "uuid": uuid})
+    return User.objects.update_or_create(defaults=user_data)
 
 
 def _update_organizations(user, data):
