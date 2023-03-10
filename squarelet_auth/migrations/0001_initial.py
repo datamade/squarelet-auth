@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('accounts', '__latest__'),
         migrations.swappable_dependency(settings.SQUARELET_ORGANIZATION_MODEL),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
