@@ -1,6 +1,5 @@
 # Django
 import django.dispatch
-from django.contrib.auth import get_user_model
 from django.db import transaction
 
 # Standard Library
@@ -13,6 +12,7 @@ from squarelet_auth.organizations.models import Membership
 from squarelet_auth.organizations.utils import (
     squarelet_update_or_create as organization_update_or_create,
 )
+from squarelet_auth.users import get_user_model
 
 User = get_user_model()
 Organization = get_organization_model()

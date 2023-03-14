@@ -1,16 +1,13 @@
 """
 Custom pipeline steps for oAuth authentication
 """
-# Django
-from django.contrib.auth import get_user_model
-
 # Standard Library
 import logging
 
 # SquareletAuth
+from squarelet_auth.users import get_user_model
 from squarelet_auth.users.utils import squarelet_update_or_create
 
-User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +17,7 @@ logger = logging.getLogger(__name__)
 def associate_by_uuid(response, user=None, *args, **kwargs):
     """Associate current auth with a user with the same uuid in the DB."""
     # pylint: disable=unused-argument,keyword-arg-before-vararg
-
+    User = get_user_model()
     uuid = response.get("uuid")
     if uuid:
         try:

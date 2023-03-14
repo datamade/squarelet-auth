@@ -2,7 +2,6 @@
 
 # Django
 from celery.task import task
-from django.contrib.auth import get_user_model
 
 # Standard Library
 import logging
@@ -16,6 +15,7 @@ from squarelet_auth.organizations import get_organization_model
 from squarelet_auth.organizations.utils import (
     squarelet_update_or_create as org_update_or_create,
 )
+from squarelet_auth.users import get_user_model
 from squarelet_auth.users.utils import (
     squarelet_update_or_create as user_update_or_create,
 )
