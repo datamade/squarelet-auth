@@ -1,7 +1,7 @@
 # Django
 import django.dispatch
 from django.contrib.auth import get_user_model
-from django.db import transaction
+from django.db import transaction, IntegrityError
 
 # Standard Library
 import logging
@@ -36,6 +36,8 @@ def squarelet_update_or_create(uuid, data):
         return None, False
 
     user, created = _squarelet_update_or_create(uuid, data)
+    print('user', user.__dict__)
+    print('data', data)
 
     _update_organizations(user, data)
 
@@ -47,7 +49,6 @@ def squarelet_update_or_create(uuid, data):
 def _squarelet_update_or_create(uuid, data):
     """Format user data and update or create the user"""
     user_map = {
-        "uuid": "uuid",
         "preferred_username": "username",
         "email": "email",
         "name": "name",
@@ -57,7 +58,6 @@ def _squarelet_update_or_create(uuid, data):
         "use_autologin": "use_autologin",
     }
     user_defaults = {
-        "uuid": uuid,
         "preferred_username": "",
         "email": "",
         "name": "",
@@ -67,7 +67,19 @@ def _squarelet_update_or_create(uuid, data):
         "use_autologin": True,
     }
     user_data = {user_map[k]: data.get(k, user_defaults[k]) for k in user_map}
-    return User.objects.update_or_create(defaults=user_data)
+
+    try:
+        user, created = User.objects.update_or_create(uuid=uuid, defaults=user_data)
+    except IntegrityError:
+        # User already exists with this email, so use that to get the user
+        # and treat the MuckRock uuid as the source of truth by updating
+        # this application's user.uuid with the user's MuckRock uuid.
+        user_data.update({"uuid": uuid})
+        user, created = User.objects.update_or_create(
+            username=user_data['username'], defaults=user_data
+        )
+
+    return user, created
 
 
 def _update_organizations(user, data):
@@ -79,11 +91,21 @@ def _update_organizations(user, data):
     new_memberships = []
     active = True
 
+    print('current_organizations', current_organizations)
+
+    # current_organizations=[<SquareletOrganization: SquareletOrganization object (8)>]
+    # data={access_token: [Filtered], expires_in: 3600, id_token: [Filtered], name: 'joe doe', nickname: 'joedoe', picture: 'https://cdn.muckrock.com/static/images/avatars/profile.png', preferred_username: 'joedoe', refresh_token: [Filtered], sub: '100286', token_type: [Filtered]}
+    # new_memberships=[<Membership: joedoe in SquareletOrganization object (10)>]
+    # org_data={admin: True, card: '', entitlements: [], individual: True, max_users: 1, name: 'hancushland', plan: 'free', private: True, slug: 'joedoe', uuid: '7c5eb5a1-d13d-44db-be21-30613df6cb49'}
+    # organization=<SquareletOrganization: SquareletOrganization object (10)>
+
     # process each organization
     for org_data in data.get("organizations", []):
+        print('org_data', org_data)
         organization, _ = organization_update_or_create(
             uuid=org_data["uuid"], data=org_data
         )
+        print('organization', organization)
         if organization in current_organizations:
             # remove organizations from our set as we see them
             # any that are left will need to be removed
@@ -104,17 +126,22 @@ def _update_organizations(user, data):
             )
             active = False
 
+    print('new_memberships', new_memberships)
     if new_memberships:
         # first new membership will be made active, de-activate current
         # active org first
         user.memberships.filter(active=True).update(active=False)
         user.memberships.bulk_create(new_memberships)
 
+    print('user.organization', user.organization)
+
     # user must have an active organization, if the current
     # active one is removed, we will activate the user's individual organization
     if user.organization in current_organizations:
         user.memberships.filter(organization__individual=True).update(active=True)
 
+    for membership in user.memberships.all():
+        print('membership', membership.__dict__)
     # never remove the user's individual organization
     individual_organization = user.memberships.get(organization__individual=True)
     if individual_organization in current_organizations:
