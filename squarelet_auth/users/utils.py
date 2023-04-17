@@ -1,7 +1,7 @@
 # Django
 import django.dispatch
 from django.contrib.auth import get_user_model
-from django.db import transaction
+from django.db import transaction, IntegrityError
 
 # Standard Library
 import logging
@@ -47,7 +47,6 @@ def squarelet_update_or_create(uuid, data):
 def _squarelet_update_or_create(uuid, data):
     """Format user data and update or create the user"""
     user_map = {
-        "uuid": "uuid",
         "preferred_username": "username",
         "email": "email",
         "name": "name",
@@ -57,7 +56,6 @@ def _squarelet_update_or_create(uuid, data):
         "use_autologin": "use_autologin",
     }
     user_defaults = {
-        "uuid": uuid,
         "preferred_username": "",
         "email": "",
         "name": "",
@@ -67,7 +65,19 @@ def _squarelet_update_or_create(uuid, data):
         "use_autologin": True,
     }
     user_data = {user_map[k]: data.get(k, user_defaults[k]) for k in user_map}
-    return User.objects.update_or_create(defaults=user_data)
+
+    try:
+        user, created = User.objects.update_or_create(uuid=uuid, defaults=user_data)
+    except IntegrityError:
+        # User already exists with this email, so use that to get the user
+        # and treat the MuckRock uuid as the source of truth by updating
+        # this application's user.uuid with the user's MuckRock uuid.
+        user_data.update({"uuid": uuid})
+        user, created = User.objects.update_or_create(
+            username=user_data['username'], defaults=user_data
+        )
+
+    return user, created
 
 
 def _update_organizations(user, data):
